@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>닌자 번개표창 게임</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      font-family: sans-serif;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    #introVideo {
+      display: block;
+      margin: 0 auto;
+    }
+    #introOverlay {
+      position: absolute;
+      top: 40%;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 24px;
+      color: white;
+      z-index: 10;
+    }
+    #gameContainer {
+      display: none;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background: #222;
+    }
+    #restartBtn {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      font-size: 20px;
+      cursor: pointer;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 인트로 메시지 -->
+  <div id="introOverlay">🎮 스페이스바를 눌러주세요!</div>
+
+  <!-- 인트로 영상 -->
+  <video id="introVideo" width="480" height="640" autoplay muted playsinline>
+    <source src="video/ninjagameintro.mp4" type="video/mp4">
+    브라우저가 영상을 지원하지 않습니다.
+  </video>
+
+  <!-- 게임 영역 -->
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+    <button id="restartBtn">다시 시작하기</button>
+    <audio id="bgm" loop>
+      <source src="audio/bgm.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <script src="js/game.js"></script>
+  <script>
+    const introVideo = document.getElementById('introVideo');
+    const gameContainer = document.getElementById('gameContainer');
+    const bgm = document.getElementById('bgm');
+    const introOverlay = document.getElementById('introOverlay');
+
+    function enableAudioAndPlay() {
+      introVideo.muted = false;
+      introVideo.play().catch(err => console.warn("인트로 영상 재생 실패", err));
+      introOverlay.style.display = "none";
+      document.removeEventListener("keydown", enableAudioAndPlay);
+      document.removeEventListener("click", enableAudioAndPlay);
+    }
+
+    document.addEventListener("keydown", enableAudioAndPlay);
+    document.addEventListener("click", enableAudioAndPlay);
+
+    introVideo.addEventListener("ended", () => {
+      introVideo.style.display = "none";
+      gameContainer.style.display = "block";
+      if (typeof gameLoop === "function") {
+        gameLoop();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === " ") {
+        bgm.play().catch(err => console.warn("배경음악 재생 실패", err));
+      }
+    });
+  </script>
+
+</body>
+</html>
